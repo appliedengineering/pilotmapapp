@@ -3,13 +3,39 @@ cmake_minimum_required(VERSION 3.5)
 project(pilotmapapp VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(EXECUTABLE_OUTPUT_PATH "bin")
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Platform Options
+
+## QT Options
+set(QT_INSTALL_PATH "/usr/local/Homebrew/Cellar/qt@5/5.15.2_2")
+# set(QT_INSTALL_PATH "O:\\Qt\\5.15.2\\msvc2019_64")
+#set(QT_INSTALL_PATH "/opt/Qt/5.15.2/")
+set(CMAKE_PREFIX_PATH "${QT_INSTALL_PATH}")  # <--- MAKE SURE HOMEBREW INSTALLATION FOR QT IS x86_64 (arm is not supported for dependencies)
+
+## Set CMAKE cmake script dir
+
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+set(CMAKE_SOURCE_DIR ${PROJECT_SOURCE_DIR})
+
+## Set CMAKE Arch to x86_64
+
+set(CMAKE_GENERATOR_PLATFORM x86_64)
+set(CMAKE_SYSTEM_PROCESSOR x86_64)
+set(CMAKE_OSX_ARCHITECTURES x86_64)
+
+message("Binary DIR = ${CMAKE_BINARY_DIR}")
+message("Source DIR = ${CMAKE_SOURCE_DIR}")
+
+###
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
