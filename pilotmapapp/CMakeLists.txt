@@ -21,6 +21,25 @@ set(QT_INSTALL_PATH "/usr/local/Homebrew/Cellar/qt@5/5.15.2_2")
 #set(QT_INSTALL_PATH "/opt/Qt/5.15.2/")
 set(CMAKE_PREFIX_PATH "${QT_INSTALL_PATH}")  # <--- MAKE SURE HOMEBREW INSTALLATION FOR QT IS x86_64 (arm is not supported for dependencies)
 
+## ArcGIS Options
+set(ArcGISRuntime_INSTALL_DIR "/Users/richy/ArcGIS_SDKs/Qt100.7") # <--- Location of ArcGIS SDK ([location]/ArcGIS_SDKs/Qt100.13/)
+#set(ArcGISRuntime_INSTALL_DIR "/opt/arcgis")
+set(ArcGISRuntime_DIR "${ArcGISRuntime_INSTALL_DIR}/sdk/ideintegration")
+
+set(ArcGIS_PLATFORM_NAME "macOS") # options are: android, iOS, macOS
+include_directories("${ArcGISRuntime_INSTALL_DIR}/sdk/include") # ArcGIS SDK include files
+
+## ZMQ Options
+set(ZMQ_VERSION "4.3.4")
+set(ZMQ_INSTALL_PATH "/usr/local/Homebrew/Cellar/zeromq/${ZMQ_VERSION}/")
+include_directories("${ZMQ_INSTALL_PATH}/include")
+link_directories("${ZMQ_INSTALL_PATH}/lib")
+
+## Boost Options
+set(BOOST_INSTALL_PATH "/usr/local/Homebrew/Cellar/boost/1.78.0_1") # before the "boost" (mind the lowercase) folder
+include_directories("${BOOST_INSTALL_PATH}/include")
+set(Boost_INCLUDE_DIR "${BOOST_INSTALL_PATH}/include")
+
 ## Set CMAKE cmake script dir
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
@@ -38,12 +57,21 @@ message("Source DIR = ${CMAKE_SOURCE_DIR}")
 ###
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Multimedia REQUIRED)
+
+find_package(ArcGISRuntime 100.7 COMPONENTS Cpp REQUIRED)
+
+find_package(msgpack REQUIRED)
 
 set(PROJECT_SOURCES
+        resources.qrc
         main.cpp
         mainwindow.cpp
         mainwindow.h
+        Widgets/mapWidget.cpp
+        Widgets/mapWidget.h
+        Backend/Utilities/utilities.cpp
+        Backend/Utilities/utilities.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -67,6 +95,23 @@ else()
             ${PROJECT_SOURCES}
         )
     endif()
+
+# Copy required ArcGIS dynamic libraries to the build folder as a post-build step.
+message("Copy ArcGIS Runtime libs")
+add_custom_command(TARGET pilotmapapp POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+  ${ArcGISRuntime_LIBRARIES}
+  "${PROJECT_BINARY_DIR}/bin")
+
+
+# ArcGISRuntime::Cpp
+target_link_libraries(pilotmapapp PRIVATE 
+  Qt${QT_VERSION_MAJOR}::Widgets 
+  Qt${QT_VERSION_MAJOR}::Multimedia
+  ArcGISRuntime::Cpp
+  zmq
+  msgpackc-cxx
+  )
 endif()
 
 target_link_libraries(pilotmapapp PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
@@ -82,3 +127,4 @@ set_target_properties(pilotmapapp PROPERTIES
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(pilotmapapp)
 endif()
+
