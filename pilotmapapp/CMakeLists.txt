@@ -84,6 +84,14 @@ set(PROJECT_SOURCES
         Widgets/mapWidget.h
         Backend/Utilities/utilities.cpp
         Backend/Utilities/utilities.h
+        Backend/Communication/communicationManager.cpp
+        Backend/Communication/communicationManager.h
+        Backend/Communication/communicationThread.cpp
+        Backend/Communication/communicationThread.h
+        Backend/Communication/dataManager.cpp
+        Backend/Communication/dataManager.h
+        Backend/boatKernel.cpp
+        Backend/boatKernel.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

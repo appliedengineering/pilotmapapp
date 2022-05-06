@@ -49,6 +49,9 @@ private:
 public:
     mapWidget(QWidget* parent = nullptr);
     ~mapWidget();
+
+public slots:
+    void updateBoatLocation(double lat, double lon);
 };
 
 #endif

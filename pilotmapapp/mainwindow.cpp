@@ -1,5 +1,7 @@
 #include "mainwindow.h"
 
+#include "Backend/Communication/communicationThread.h"
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
 
     this->setMinimumSize(400, 240);
@@ -17,6 +19,7 @@ MainWindow::~MainWindow(){
 //
 
 void MainWindow::closeApplication(){
+    communicationThread::getInstance()->stop();
     QApplication::quit();
 }
 

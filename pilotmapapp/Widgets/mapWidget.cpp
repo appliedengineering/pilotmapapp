@@ -74,6 +74,11 @@ mapWidget::~mapWidget(){
 
 //
 
+void mapWidget::updateBoatLocation(double lat, double lon){
+	
+}
+
+//
 
 void mapWidget::renderBar(){
    	addressLineEdit = new QLineEdit(this);
