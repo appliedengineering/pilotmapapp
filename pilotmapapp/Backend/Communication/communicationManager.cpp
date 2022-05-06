@@ -130,5 +130,6 @@ bool communicationManager::reconnect(void* s, std::string addr){
         return false;
     }
 
+    lastIPCAddress = newAddr;
     return true;
 }

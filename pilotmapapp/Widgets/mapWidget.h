@@ -7,6 +7,7 @@
 #include <QHBoxLayout>
 #include <QString>
 #include <QLineEdit>
+#include <QLabel>
 #include <QPushButton>
 
 namespace Esri{
@@ -33,10 +34,13 @@ private:
     double boatLat = 0, boatLon = 0;
     
     QHBoxLayout* hBoxLayout;
+    QLabel* boatCoordinateLabel;
     QLineEdit* addressLineEdit;
     QPushButton* addressUpdateButton;
 
     void renderBar();
+    void updateBoatCoordinateLabel(double lat, double lon);
+    void updateConnectionAddress();
 
     void setupMapFromMmpk();
 

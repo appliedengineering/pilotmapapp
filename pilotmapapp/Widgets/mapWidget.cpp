@@ -1,6 +1,8 @@
 #include "mapWidget.h"
 
 #include "../Backend/Utilities/utilities.h"
+#include "../Backend/boatKernel.h"
+#include "../Backend/Communication/communicationManager.h"
 
 #include <QDir>
 #include <QFile>
@@ -8,6 +10,7 @@
 #include <sstream>
 #include <string>
 #include <fstream>
+#include <QFont>
 
 #include <ArcGISRuntimeEnvironment.h>
 #include <Map.h>
@@ -67,20 +70,57 @@ mapWidget::mapWidget(QWidget* parent){
     //
 
 	renderBar();
+
+	//
+
+	connect(boatKernel::getInstance(), &boatKernel::locationUpdateSignal, this, &mapWidget::updateBoatLocation);
+	connect(addressUpdateButton, &QPushButton::released, this, &mapWidget::updateConnectionAddress);
 }
 
 mapWidget::~mapWidget(){
+	disconnect(boatKernel::getInstance(), &boatKernel::locationUpdateSignal, this, &mapWidget::updateBoatLocation);
+
 }
 
 //
 
 void mapWidget::updateBoatLocation(double lat, double lon){
+	boatLat = lat;
+	boatLon = lon;
 	
+	renderGraphics(arcGISOverlay, true);
+	updateBoatCoordinateLabel(lat, lon);
+}
+
+void mapWidget::updateBoatCoordinateLabel(double lat, double lon){
+	const int numOfDecimalPlaces = 6;
+	QString newBoatCoordinateLabelText = "(" + QString::number(utilities::roundDouble(boatLat, numOfDecimalPlaces)) + ", " + QString::number(utilities::roundDouble(boatLon, numOfDecimalPlaces)) + ")";
+	boatCoordinateLabel->setText(newBoatCoordinateLabelText);
+}
+
+void mapWidget::updateConnectionAddress(){
+	communicationManager::getInstance()->reconnect(communicationManager::getInstance()->getIPCSocket(), addressLineEdit->text().toStdString());
 }
 
 //
 
 void mapWidget::renderBar(){
+
+	boatCoordinateLabel = new QLabel(this);
+
+	boatCoordinateLabel->setText("(0.000000, 0.000000)");
+	boatCoordinateLabel->setFixedWidth(180);
+	boatCoordinateLabel->setAlignment(Qt::AlignHCenter);
+	utilities::setPaletteColor(boatCoordinateLabel, QPalette::Foreground, Qt::black, true);
+	
+	QFont boatCoordinateLabelFont = boatCoordinateLabel->font();
+	boatCoordinateLabelFont.setPixelSize(15);
+	boatCoordinateLabel->setFont(boatCoordinateLabelFont);
+
+	hBoxLayout->addWidget(boatCoordinateLabel);
+
+	//
+
    	addressLineEdit = new QLineEdit(this);
 
     addressLineEdit->setText("localhost");
