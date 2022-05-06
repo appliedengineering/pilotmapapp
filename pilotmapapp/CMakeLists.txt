@@ -16,37 +16,37 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Platform Options
 
 ## QT Options
-#set(QT_INSTALL_PATH "/usr/local/Homebrew/Cellar/qt@5/5.15.2_2")
-set(QT_INSTALL_PATH "O:/Qt/5.15.2/msvc2019_64")
+set(QT_INSTALL_PATH "/usr/local/Homebrew/Cellar/qt@5/5.15.2_2")
+#set(QT_INSTALL_PATH "O:/Qt/5.15.2/msvc2019_64")
 #set(QT_INSTALL_PATH "/opt/Qt/5.15.2/")
 set(CMAKE_PREFIX_PATH "${QT_INSTALL_PATH}")  # <--- MAKE SURE HOMEBREW INSTALLATION FOR QT IS x86_64 (arm is not supported for dependencies)
 
 ## ArcGIS Options
-#set(ArcGISRuntime_INSTALL_DIR "/Users/richy/ArcGIS_SDKs/Qt100.7") # <--- Location of ArcGIS SDK ([location]/ArcGIS_SDKs/Qt100.13/)
+set(ArcGISRuntime_INSTALL_DIR "/Users/richy/ArcGIS_SDKs/Qt100.7") # <--- Location of ArcGIS SDK ([location]/ArcGIS_SDKs/Qt100.13/)
 #set(ArcGISRuntime_INSTALL_DIR "/opt/arcgis")
-set(ArcGISRuntime_INSTALL_DIR "O:/ArcGIS_Runtime/SDKS/qt100.7")
+#set(ArcGISRuntime_INSTALL_DIR "O:/ArcGIS_Runtime/SDKS/qt100.7")
 set(ArcGISRuntime_DIR "${ArcGISRuntime_INSTALL_DIR}/sdk/ideintegration")
 
-#set(ArcGIS_PLATFORM_NAME "macOS") # options are: android, iOS, macOS
-set(ArcGIS_PLATFORM_NAME "windows")
+set(ArcGIS_PLATFORM_NAME "macOS") # options are: android, iOS, macOS
+#set(ArcGIS_PLATFORM_NAME "windows")
 include_directories("${ArcGISRuntime_INSTALL_DIR}/sdk/include") # ArcGIS SDK include files
 
 ## ZMQ Options
 set(ZMQ_VERSION "4.3.4")
-#set(ZMQ_INSTALL_PATH "/usr/local/Homebrew/Cellar/zeromq/${ZMQ_VERSION}/")
-set(ZMQ_INSTALL_PATH "O:/ZeroMQ/${ZMQ_VERSION}/")
+set(ZMQ_INSTALL_PATH "/usr/local/Homebrew/Cellar/zeromq/${ZMQ_VERSION}/")
+#set(ZMQ_INSTALL_PATH "O:/ZeroMQ/${ZMQ_VERSION}/")
 include_directories("${ZMQ_INSTALL_PATH}/include")
 link_directories("${ZMQ_INSTALL_PATH}/lib")
 
 ## Boost Options
-#set(BOOST_INSTALL_PATH "/usr/local/Homebrew/Cellar/boost/1.78.0_1") # before the "boost" (mind the lowercase) folder
-set(BOOST_INSTALL_PATH "O:/Boost/boost_1_79_0")
+set(BOOST_INSTALL_PATH "/usr/local/Homebrew/Cellar/boost/1.78.0_1") # before the "boost" (mind the lowercase) folder
+#set(BOOST_INSTALL_PATH "O:/Boost/boost_1_79_0")
 include_directories("${BOOST_INSTALL_PATH}/include")
 set(Boost_INCLUDE_DIR "${BOOST_INSTALL_PATH}/include")
 
 ## MSGPACK Options (Windows only)
-set(MSGPACK_INSTALL_PATH "O:/MSGPACK/")
-include_directories("${MSGPACK_INSTALL_PATH}/include")
+#set(MSGPACK_INSTALL_PATH "O:/MSGPACK/")
+#include_directories("${MSGPACK_INSTALL_PATH}/include")
 #set(RUNTIME_CMAKE_PATH "${MSGPACK_INSTALL_DIR}/lib/cmake/msgpackc-cxx/msgpack-config.cmake")
 
 ## Set CMAKE cmake script dir
@@ -56,9 +56,12 @@ set(CMAKE_SOURCE_DIR ${PROJECT_SOURCE_DIR})
 
 ## Set CMAKE Arch to x86_64 or x64
 
-set(CMAKE_GENERATOR_PLATFORM x64)
-set(CMAKE_SYSTEM_PROCESSOR x64)
-#set(CMAKE_OSX_ARCHITECTURES x86_64)
+#set(CMAKE_GENERATOR_PLATFORM x64)
+#set(CMAKE_SYSTEM_PROCESSOR x64)
+
+set(CMAKE_GENERATOR_PLATFORM x86_64)
+set(CMAKE_SYSTEM_PROCESSOR x86_64)
+set(CMAKE_OSX_ARCHITECTURES x86_64)
 
 message("Binary DIR = ${CMAKE_BINARY_DIR}")
 message("Source DIR = ${CMAKE_SOURCE_DIR}")

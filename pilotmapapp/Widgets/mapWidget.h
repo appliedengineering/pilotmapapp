@@ -26,10 +26,17 @@ private:
     QVBoxLayout* vBoxLayout;
     
     Esri::ArcGISRuntime::MapGraphicsView* arcGISMapView = nullptr;    
+    Esri::ArcGISRuntime::GraphicsOverlay* arcGISOverlay = nullptr;
 
+    Esri::ArcGISRuntime::Graphic* boatPoint = nullptr;
+    
+    double boatLat = 0, boatLon = 0;
+    
     QHBoxLayout* hBoxLayout;
     QLineEdit* addressLineEdit;
     QPushButton* addressUpdateButton;
+
+    void renderBar();
 
     void setupMapFromMmpk();
 

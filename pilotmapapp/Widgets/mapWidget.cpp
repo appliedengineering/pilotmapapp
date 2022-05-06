@@ -43,9 +43,15 @@ mapWidget::mapWidget(QWidget* parent){
     const int arcGISMapViewStretchFactor = 90;
     arcGISMapView = new MapGraphicsView(this);
 
-    setupMapFromMmpk();
+	setupMapFromMmpk();
 
     vBoxLayout->addWidget(arcGISMapView, arcGISMapViewStretchFactor);
+
+	//
+
+	arcGISOverlay = new GraphicsOverlay(this);
+	renderGraphics(arcGISOverlay);
+	arcGISMapView->graphicsOverlays()->append(arcGISOverlay);
 
     //
 
@@ -60,7 +66,17 @@ mapWidget::mapWidget(QWidget* parent){
 
     //
 
-    addressLineEdit = new QLineEdit(this);
+	renderBar();
+}
+
+mapWidget::~mapWidget(){
+}
+
+//
+
+
+void mapWidget::renderBar(){
+   	addressLineEdit = new QLineEdit(this);
 
     addressLineEdit->setText("localhost");
     addressLineEdit->setAlignment(Qt::AlignHCenter);
@@ -77,13 +93,7 @@ mapWidget::mapWidget(QWidget* parent){
     utilities::setPaletteColor(addressUpdateButton, QPalette::ButtonText, Qt::black, true);
 
     hBoxLayout->addWidget(addressUpdateButton);
-    
 }
-
-mapWidget::~mapWidget(){
-}
-
-//
 
 void mapWidget::setupMapFromMmpk(){
     QString mmpkPath = QDir::currentPath() + "/map.mmpk";
@@ -104,15 +114,76 @@ void mapWidget::setupMapFromMmpk(){
 }
 
 void mapWidget::renderGraphics(Esri::ArcGISRuntime::GraphicsOverlay* overlay, bool shouldOnlyRenderBoat){
+    if (!shouldOnlyRenderBoat)
+		overlay->graphics()->clear();
 
+	//
+
+	if (boatPoint != nullptr){
+		//qInfo() << "existing boatPoint";
+		for (int i = 0; i < overlay->graphics()->size(); i++){
+			if (overlay->graphics()->at(i) == boatPoint){
+				//qInfo() << "found boatPoint -> " << overlay->graphics()->size();
+				overlay->graphics()->removeAt(i);
+				break;
+			}
+		}
+	}
+
+	boatPoint = drawPoint(overlay, boatLat, boatLon);
+
+	//
+
+	if (!shouldOnlyRenderBoat){
+
+		std::vector<std::pair<double, double>> c = loadBuoyCoordinates();
+
+		for (std::pair<double, double> i : c)
+			drawPoint(overlay, i.first, i.second, Qt::red, Qt::black);
+
+		//qInfo() << "after loading buoys -> " << overlay->graphics()->size();
+
+	}
 }
 
-Esri::ArcGISRuntime::Graphic* drawPoint(Esri::ArcGISRuntime::GraphicsOverlay* overlay, double lat, double lon, QColor pointColor, QColor outlineColor){
-    return nullptr;
+Esri::ArcGISRuntime::Graphic* mapWidget::drawPoint(Esri::ArcGISRuntime::GraphicsOverlay* overlay, double lat, double lon, QColor pointColor, QColor outlineColor){
+    Point p(lon, lat, SpatialReference::wgs84());
+
+  	SimpleLineSymbol* pOutline = new SimpleLineSymbol(SimpleLineSymbolStyle::Solid, outlineColor, 7, this);
+	SimpleMarkerSymbol* pSymb = new SimpleMarkerSymbol(SimpleMarkerSymbolStyle::Circle, pointColor, 10, this);
+	pSymb->setOutline(pOutline);
+
+	Graphic* point = new Graphic(p, pSymb, this);
+	overlay->graphics()->append(point);
+	return point;
 }
 
-std::vector<std::pair<double, double>> loadBuoyCoordinates(){
-    return {};
+std::vector<std::pair<double, double>> mapWidget::loadBuoyCoordinates(){
+    std::ifstream coordinateFile("buoycoords.txt");
+
+	std::vector<std::pair<double, double>> c;
+
+	if (!coordinateFile.is_open()){
+		qInfo() << "No buoy coordinate file";
+		return c;
+	}
+
+	std::string fileLine;
+	while (std::getline(coordinateFile, fileLine)){
+		if (fileLine.empty())
+			continue;
+		
+		std::istringstream iss(fileLine);
+		double x, y;
+		if (!(iss >> x >> y)){
+			qDebug() << "error parsing line " << QString::fromStdString(fileLine) << " in buoycoords.txt"; 
+			continue;
+		}
+
+		c.push_back({x, y});
+	}
+
+	return c;
 }
 
 
