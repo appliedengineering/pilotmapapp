@@ -27,7 +27,7 @@ boatKernel* boatKernel::getInstance(){
 //
 
 void boatKernel::receiveBoatDataPack(boatDataPack data){
-    qInfo() << "recv boat data";
+    //qInfo() << "recv boat data";
     
     //
 
