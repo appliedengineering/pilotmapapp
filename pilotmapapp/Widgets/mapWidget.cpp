@@ -103,16 +103,16 @@ void mapWidget::setupMapFromMmpk(){
 	mappackage->load();
 }
 
-void mapWidget::renderGraphics(Esri::ArcGISRuntime::GraphicsOverlay* overlay, bool shouldOnlyRenderBoat = false){
+void mapWidget::renderGraphics(Esri::ArcGISRuntime::GraphicsOverlay* overlay, bool shouldOnlyRenderBoat){
 
 }
 
 Esri::ArcGISRuntime::Graphic* drawPoint(Esri::ArcGISRuntime::GraphicsOverlay* overlay, double lat, double lon, QColor pointColor, QColor outlineColor){
-
+    return nullptr;
 }
 
 std::vector<std::pair<double, double>> loadBuoyCoordinates(){
-    
+    return {};
 }
 
 
